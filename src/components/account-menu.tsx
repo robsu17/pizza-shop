@@ -6,11 +6,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Building, ChevronDown, LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 import { getManagerRestaurant } from '@/api/get-manager-restaurant'
 import { getProfile } from '@/api/get-profile'
+import { signOut } from '@/api/sign-out'
 
 import { StoreProfileDialog } from './store-profile-dialog'
 import { Button } from './ui/button'
@@ -18,6 +20,8 @@ import { Dialog, DialogTrigger } from './ui/dialog'
 import { Skeleton } from './ui/skeleton'
 
 export function AccountMenu() {
+  const navigate = useNavigate()
+
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ['profile'],
     queryFn: getProfile,
@@ -29,6 +33,13 @@ export function AccountMenu() {
       queryFn: getManagerRestaurant,
       staleTime: Infinity,
     })
+
+  const { mutateAsync: signOutFn, isPending: isSigningOut } = useMutation({
+    mutationFn: signOut,
+    onSuccess: () => {
+      navigate('/sign-in', { replace: true })
+    },
+  })
 
   return (
     <Dialog>
@@ -75,7 +86,11 @@ export function AccountMenu() {
             </DropdownMenuItem>
           </DialogTrigger>
 
-          <DropdownMenuItem className="flex cursor-pointer items-center rounded-md px-2 py-1 text-rose-500 outline-none hover:bg-foreground/5 dark:text-rose-400">
+          <DropdownMenuItem
+            disabled={isSigningOut}
+            onClick={() => signOutFn()}
+            className="flex cursor-pointer items-center rounded-md px-2 py-1 text-rose-500 outline-none hover:bg-foreground/5 dark:text-rose-400"
+          >
             <LogOut className="mr-2 h-4 w-4" />
             <span>Sair</span>
           </DropdownMenuItem>
