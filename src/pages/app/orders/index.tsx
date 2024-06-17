@@ -27,7 +27,11 @@ export function Orders() {
         </div>
 
         <div>
-          <Pagination pageIndex={0} totalCount={105} perPage={10} />
+          <Pagination
+            pageIndex={result?.meta.pageIndex || 0}
+            totalCount={result?.meta.totalCount || 0}
+            perPage={result?.meta.perPage || 0}
+          />
         </div>
       </div>
     </>
