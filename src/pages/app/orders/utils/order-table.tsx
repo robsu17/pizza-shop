@@ -9,10 +9,16 @@ import {
 import { OrderTableRow } from './order-table-row'
 
 interface OrderTableProps {
-  items: []
+  orders?: {
+    orderId: string
+    createdAt: string
+    status: 'pending' | 'canceled' | 'processing' | 'delivering' | 'delivered'
+    customerName: string
+    total: number
+  }[]
 }
 
-export function OrderTable({ items = [] }: OrderTableProps) {
+export function OrderTable({ orders }: OrderTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -28,9 +34,10 @@ export function OrderTable({ items = [] }: OrderTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Array.from({ length: 10 }).map((_, i) => {
-          return <OrderTableRow key={i} />
-        })}
+        {orders &&
+          orders.map((order) => {
+            return <OrderTableRow key={order.orderId} order={order} />
+          })}
       </TableBody>
     </Table>
   )
